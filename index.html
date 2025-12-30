@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Light Show Countdown</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #000; color: #fff; text-align: center; padding: 50px; }
+        #countdown { font-size: 3em; margin: 20px; }
+        h1 { font-size: 2.5em; }
+        .show-time { font-size: 2em; color: #0f0; }
+    </style>
+</head>
+<body>
+    <h1>Next Light Show Countdown</h1>
+    <div id="next-show">Calculating...</div>
+    <div id="countdown">Loading...</div>
+
+    <script>
+        function updateCountdown() {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            const shows = [
+                {h:15, m:30}, {h:16, m:0}, {h:16, m:30}, {h:17, m:0}, {h:17, m:30},
+                {h:18, m:0}, {h:18, m:30}, {h:19, m:0}, {h:19, m:30}, {h:20, m:0}
+            ];
+            
+            let nextTime = null;
+            let nextLabel = "";
+            
+            for (let show of shows) {
+                const showTime = new Date(today);
+                showTime.setHours(show.h, show.m, 0, 0);
+                if (showTime > now) {
+                    nextTime = showTime;
+                    nextLabel = `${show.h.toString().padStart(2,'0')}:${show.m.toString().padStart(2,'0')}`;
+                    break;
+                }
+            }
+            
+            if (!nextTime) {
+                // Next day first show
+                nextTime = new Date(today);
+                nextTime.setDate(nextTime.getDate() + 1);
+                nextTime.setHours(15, 30, 0, 0);
+                nextLabel = "15:30 (tomorrow)";
+            }
+            
+            document.getElementById('next-show').innerHTML = `Next show at: <span class="show-time">${nextLabel}</span>`;
+            
+            const diff = nextTime - now;
+            
+            if (diff <= 0) {
+                document.getElementById('countdown').innerHTML = "Light Show Starting Now!";
+                return;
+            }
+            
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            
+            document.getElementById('countdown').innerHTML = 
+                `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
